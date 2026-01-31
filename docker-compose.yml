@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bambu_app
+    ports:
+      - "${DOCKER_APP_PORT:-3020}:${PORT:-3000}"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${PORT:-3000}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-todo_db}
+      JWT_SECRET: ${JWT_SECRET:-change_me}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+    depends_on:
+      - db
+    command: npm run dev
+
+  db:
+    image: postgres:16
+    container_name: bambu_db
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-todo_db}
+    ports:
+      - "${DOCKER_DB_PORT:-5428}:5432"
+    volumes:
+      - todo_db_data:/var/lib/postgresql/data
+
+volumes:
+  todo_db_data:

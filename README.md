@@ -14,32 +14,41 @@ API REST desarrollada con TypeScript, Fastify y TypeORM para el desafío técnic
 - **JWT** - Autenticación basada en tokens
 - **Bcrypt** - Encriptación de contraseñas
 - **Zod** - Validación de esquemas
-- **Swagger/OpenAPI** - Documentación de la API
+- **Swagger** - Documentación de la API
 
 ## 📦 Prerequisitos
 
 Antes de comenzar, asegúrate de tener instalado:
 
+- **Docker** (v20 o superior)
+- **Docker Compose** (v2 o superior)
+
+### Opción alternativa sin Docker:
 - Node.js (v18 o superior)
 - PostgreSQL (v14 o superior)
 - npm o yarn
 
-## 🚀 Instalación
+## 🚀 Instalación y Uso
+
+### 🐳 Opción 1: Con Docker (Recomendado)
+
+Esta es la forma más rápida y sencilla de ejecutar el proyecto. Docker Compose levantará automáticamente tanto la base de datos PostgreSQL como la aplicación Fastify.
 
 1. **Clonar el repositorio**
 ```bash
-git clone <repository-url>
+git clone https://github.com/juanframart2011/challenge-bambu-tech-services
 cd challenge-bambu-tech-services
 ```
 
-2. **Instalar dependencias**
+2. **Configurar variables de entorno**
+
+Copia el archivo de ejemplo y ajusta las variables según necesites:
+
 ```bash
-npm install
+cp .env.example .env
 ```
 
-3. **Configurar variables de entorno**
-
-Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
+Edita el archivo `.env` con tus valores:
 
 ```env
 # Server Configuration
@@ -50,8 +59,106 @@ NODE_ENV=development
 DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=postgres
-DB_PASSWORD=your_password
-DB_NAME=bambu_challenge
+DB_PASSWORD=tu_password_aqui
+DB_NAME=todo_db
+
+# JWT Configuration
+JWT_SECRET=cambia_esto_por_un_secret_seguro
+JWT_EXPIRES_IN=24h
+
+# Docker Ports (Host Machine)
+DOCKER_APP_PORT=3020
+DOCKER_DB_PORT=5428
+```
+
+⚠️ **Importante**: El archivo `.env` no se sube al repositorio (está en `.gitignore`). Docker Compose leerá automáticamente estas variables.
+
+3. **Levantar los servicios con Docker Compose**
+
+Primera vez (construye las imágenes y levanta los contenedores):
+```bash
+docker-compose up --build
+```
+
+Ejecuciones posteriores:
+```bash
+docker-compose up
+```
+
+Para ejecutar en segundo plano (detached mode):
+```bash
+docker-compose up -d
+```
+
+3. **¡Listo!** Los servicios estarán disponibles en:
+- **API Fastify**: `http://localhost:3020`
+- **PostgreSQL**: `localhost:5428`
+- **Swagger Docs**: `http://localhost:3020/docs`
+
+#### Comandos útiles de Docker:
+
+```bash
+# Ver logs en tiempo real
+docker-compose logs -f
+
+# Ver logs solo de la aplicación
+docker-compose logs -f app
+
+# Detener los servicios
+docker-compose down
+
+# Detener y eliminar volúmenes (borra la BD)
+docker-compose down -v
+
+# Reconstruir las imágenes
+docker-compose build
+
+# Reiniciar un servicio específico
+docker-compose restart app
+```
+
+#### Características del entorno Docker:
+
+✅ **Hot-reload activado**: Los cambios en el código se reflejan automáticamente sin reiniciar el contenedor  
+✅ **PostgreSQL preconfigurado**: Base de datos lista para usar  
+✅ **Volúmenes persistentes**: Los datos de la BD se mantienen entre reinicios  
+✅ **Networking automático**: La app se conecta automáticamente a la BD  
+✅ **Variables de entorno seguras**: Las credenciales se gestionan mediante archivo `.env`
+
+### 💻 Opción 2: Instalación Local (Sin Docker)
+
+1. **Clonar el repositorio**
+```bash
+git clone https://github.com/juanframart2011/challenge-bambu-tech-services
+cd challenge-bambu-tech-services
+```
+
+2. **Instalar dependencias**
+```bash
+npm install
+```
+
+3. **Configurar variables de entorno**
+
+Copia el archivo de ejemplo y ajústalo:
+
+```bash
+cp .env.example .env
+```
+
+Edita el archivo `.env` con tus valores:
+
+```env
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=todo_db
 
 # JWT Configuration
 JWT_SECRET=your_secret_key_here
@@ -62,22 +169,17 @@ JWT_EXPIRES_IN=24h
 
 Crea la base de datos en PostgreSQL:
 ```sql
-CREATE DATABASE bambu_challenge;
+CREATE DATABASE todo_db;
 ```
 
-Las tablas se crearán automáticamente al iniciar la aplicación gracias a TypeORM.
-
-## 💻 Uso
-
-### Modo Desarrollo
-
+5. **Ejecutar en modo desarrollo**
 ```bash
 npm run dev
 ```
 
-El servidor se iniciará en `http://localhost:3000` (o el puerto configurado en `.env`)
+El servidor se iniciará en `http://localhost:3000`
 
-### Modo Producción
+### Modo Producción (Local)
 
 ```bash
 npm run build
@@ -88,9 +190,8 @@ npm start
 
 Una vez que el servidor esté corriendo, puedes acceder a la documentación interactiva de Swagger en:
 
-```
-http://localhost:3000/docs
-```
+- **Con Docker**: `http://localhost:3020/docs`
+- **Sin Docker**: `http://localhost:3000/docs`
 
 ## 🏗️ Estructura del Proyecto
 
@@ -98,6 +199,7 @@ http://localhost:3000/docs
 challenge-bambu-tech-services/
 ├── src/
 │   ├── config/         # Configuraciones (DB, JWT, etc.)
+│   ├── db/             # Configuración de TypeORM y DataSource
 │   ├── entities/       # Entidades de TypeORM
 │   ├── routes/         # Rutas de la API
 │   ├── controllers/    # Controladores
@@ -105,9 +207,13 @@ challenge-bambu-tech-services/
 │   ├── middlewares/    # Middlewares (auth, validación)
 │   ├── schemas/        # Esquemas de validación (Zod)
 │   ├── utils/          # Utilidades
-│   └── index.ts        # Punto de entrada
+│   ├── app.ts          # Configuración de Fastify
+│   └── main.ts         # Punto de entrada
 ├── .env                # Variables de entorno (no incluido en git)
 ├── .gitignore
+├── .dockerignore
+├── Dockerfile          # Configuración de Docker para la app
+├── docker-compose.yml  # Orquestación de servicios
 ├── package.json
 ├── tsconfig.json
 └── README.md
