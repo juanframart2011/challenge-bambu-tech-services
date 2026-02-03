@@ -198,22 +198,30 @@ Una vez que el servidor esté corriendo, puedes acceder a la documentación inte
 ```
 challenge-bambu-tech-services/
 ├── src/
-│   ├── config/         # Configuraciones (DB, JWT, etc.)
-│   ├── db/             # Configuración de TypeORM y DataSource
-│   ├── entities/       # Entidades de TypeORM
-│   ├── routes/         # Rutas de la API
-│   ├── controllers/    # Controladores
-│   ├── services/       # Lógica de negocio
-│   ├── middlewares/    # Middlewares (auth, validación)
-│   ├── schemas/        # Esquemas de validación (Zod)
-│   ├── utils/          # Utilidades
-│   ├── app.ts          # Configuración de Fastify
-│   └── main.ts         # Punto de entrada
-├── .env                # Variables de entorno (no incluido en git)
+│   ├── config/          # Configuración de variables de entorno
+│   ├── db/              # Configuración de TypeORM y DataSource
+│   ├── entities/        # Entidades de TypeORM (User, Todo)
+│   ├── modules/         # Módulos de la aplicación
+│   │   ├── auth/        # Módulo de autenticación
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── auth.service.ts
+│   │   │   ├── auth.schemas.ts
+│   │   │   └── index.ts
+│   │   └── todo/        # Módulo de TODOs
+│   │       ├── todo.controller.ts
+│   │       ├── todo.service.ts
+│   │       ├── todo.schemas.ts
+│   │       └── index.ts
+│   ├── plugins/         # Plugins de Fastify (JWT, Swagger)
+│   ├── utils/           # Utilidades (bcrypt, etc.)
+│   ├── app.ts           # Configuración de Fastify
+│   └── main.ts          # Punto de entrada
+├── .env                 # Variables de entorno (no incluido en git)
+├── .env.example         # Ejemplo de variables de entorno
 ├── .gitignore
 ├── .dockerignore
-├── Dockerfile          # Configuración de Docker para la app
-├── docker-compose.yml  # Orquestación de servicios
+├── Dockerfile           # Configuración de Docker para la app
+├── docker-compose.yml   # Orquestación de servicios
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -221,18 +229,21 @@ challenge-bambu-tech-services/
 
 ## 🔐 Endpoints Principales
 
-*(Se actualizará con los endpoints específicos una vez implementados)*
-
 ### Autenticación
-- `POST /api/auth/register` - Registro de usuarios
-- `POST /api/auth/login` - Inicio de sesión
-- `POST /api/auth/logout` - Cierre de sesión
+- `POST /api/auth/register` - Registro de nuevos usuarios
+- `POST /api/auth/login` - Inicio de sesión (devuelve JWT token)
+- `GET /api/auth/profile` - Obtener perfil del usuario autenticado (protegido)
 
-### Usuarios
-- `GET /api/users` - Listar usuarios (protegido)
-- `GET /api/users/:id` - Obtener usuario por ID (protegido)
-- `PUT /api/users/:id` - Actualizar usuario (protegido)
-- `DELETE /api/users/:id` - Eliminar usuario (protegido)
+### TODOs
+- `POST /api/todos` - Crear nueva tarea (protegido)
+- `GET /api/todos` - Listar tareas con paginación y filtros (protegido)
+- `GET /api/todos/statistics` - Obtener estadísticas de tareas (protegido)
+- `GET /api/todos/:id` - Obtener tarea por ID (protegido)
+- `PUT /api/todos/:id` - Actualizar tarea (protegido)
+- `DELETE /api/todos/:id` - Eliminar tarea (protegido)
+
+### Otros
+- `GET /health` - Health check del servidor
 
 ## 🧪 Testing
 
@@ -248,6 +259,22 @@ npm test
 - `npm test` - Ejecuta las pruebas
 
 ## 🔧 Configuración Adicional
+
+### GitFlow
+
+Este proyecto utiliza GitFlow como metodología de trabajo:
+
+- `master` - Rama principal con código en producción
+- `develop` - Rama de desarrollo donde se integran las features
+- `feature/*` - Ramas para nuevas características (ej: `feature/swagger-postgresql-typeorm`)
+- `hotfix/*` - Ramas para correcciones urgentes en producción
+- `release/*` - Ramas para preparar nuevas versiones
+
+**Flujo de trabajo:**
+1. Crear feature branch desde develop: `git checkout -b feature/nombre-feature develop`
+2. Desarrollar y hacer commits: `git commit -m "feat: descripción"`
+3. Mergear a develop: `git checkout develop && git merge --no-ff feature/nombre-feature`
+4. Para releases, crear rama release y mergear a master y develop
 
 ### TypeORM
 
