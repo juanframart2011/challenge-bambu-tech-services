@@ -7,19 +7,7 @@ import { ENV } from './config/env';
 
 export async function buildApp() {
   const app = Fastify({
-    logger: {
-      level: ENV.NODE_ENV === 'development' ? 'info' : 'error',
-      transport:
-        ENV.NODE_ENV === 'development'
-          ? {
-              target: 'pino-pretty',
-              options: {
-                translateTime: 'HH:MM:ss Z',
-                ignore: 'pid,hostname',
-              },
-            }
-          : undefined,
-    },
+    logger: ENV.NODE_ENV === 'development',
   });
 
   // Registrar plugins

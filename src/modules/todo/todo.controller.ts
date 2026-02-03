@@ -25,15 +25,14 @@ export async function todoRoutes(app: FastifyInstance) {
           type: 'object',
           required: ['title'],
           properties: {
-            title: { type: 'string', example: 'Completar proyecto' },
-            description: { type: 'string', example: 'Descripción detallada de la tarea' },
+            title: { type: 'string' },
+            description: { type: 'string' },
             status: {
               type: 'string',
               enum: ['pending', 'in_progress', 'completed'],
-              example: 'pending',
             },
-            dueDate: { type: 'string', format: 'date-time', example: '2024-12-31T23:59:59Z' },
-            priority: { type: 'number', minimum: 0, maximum: 10, example: 5 },
+            dueDate: { type: 'string', format: 'date-time' },
+            priority: { type: 'number', minimum: 0, maximum: 10 },
           },
         },
         response: {
