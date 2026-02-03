@@ -267,8 +267,4 @@ ISC
 
 ## ✍️ Autor
 
-Tu Nombre
-
----
-
-**Nota:** Este README se actualizará conforme avance el desarrollo del proyecto.
+Juan Rogelio Franco Martinez
