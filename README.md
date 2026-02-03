@@ -186,7 +186,54 @@ npm run build
 npm start
 ```
 
-## 📚 Documentación de la API
+## �️ Migraciones de Base de Datos
+
+El proyecto utiliza **TypeORM migrations** para gestionar el esquema de la base de datos de forma versionada y controlada.
+
+### ✅ Ejecución Automática
+
+Las migraciones se ejecutan **automáticamente** al iniciar la aplicación, tanto en Docker como en local. No necesitas ejecutar comandos manualmente.
+
+### 📋 Comandos de Migraciones (Avanzado)
+
+Si necesitas gestionar migraciones manualmente:
+
+```bash
+# Ver estado de las migraciones
+npm run migration:show
+
+# Ejecutar migraciones pendientes
+npm run migration:run
+
+# Revertir última migración
+npm run migration:revert
+
+# Generar nueva migración basada en cambios en entidades
+npm run migration:generate -- src/migrations/NombreDeLaMigracion
+```
+
+### 📁 Migraciones Incluidas
+
+El proyecto incluye la migración inicial que crea:
+- ✅ Tabla `users` con campos: id, email, password, name, isActive, timestamps
+- ✅ Tabla `todos` con campos: id, title, description, status, dueDate, priority, timestamps, userId
+- ✅ Relación foreign key entre `todos` y `users` (CASCADE on delete)
+- ✅ Índices para optimizar consultas por userId y status
+- ✅ Tipo ENUM para status de TODOs (pending, in_progress, completed)
+
+**Ubicación**: `src/migrations/1738598400000-InitialSchema.ts`
+
+### 🔄 Primera Ejecución
+
+Cuando ejecutes el proyecto por primera vez:
+1. El servidor se conectará a la base de datos
+2. Verificará las migraciones pendientes
+3. Ejecutará automáticamente la migración inicial
+4. Creará todas las tablas y estructuras necesarias
+
+**Nota**: Si ya tienes las tablas creadas (por ejemplo, si corriste el proyecto antes con `synchronize: true`), las migraciones detectarán que la estructura ya existe y no duplicarán las tablas.
+
+## �📚 Documentación de la API
 
 Una vez que el servidor esté corriendo, puedes acceder a la documentación interactiva de Swagger en:
 
@@ -201,6 +248,7 @@ challenge-bambu-tech-services/
 │   ├── config/          # Configuración de variables de entorno
 │   ├── db/              # Configuración de TypeORM y DataSource
 │   ├── entities/        # Entidades de TypeORM (User, Todo)
+│   ├── migrations/      # Migraciones de base de datos
 │   ├── modules/         # Módulos de la aplicación
 │   │   ├── auth/        # Módulo de autenticación
 │   │   │   ├── auth.controller.ts
